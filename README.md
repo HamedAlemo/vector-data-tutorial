@@ -11,16 +11,16 @@ You need to have Docker installed on your machine.
 It's recommended to pull the Docker image from Dockerhub. Otherwise, if you prefer, you can build your own image using the instructions in the following section. 
 
 ```
-docker pull hamedalemo/vector-tutorial:1.0
+docker pull hamedalemo/vector-tutorial:1.1
 ```
 
 ```
-docker run -it -p 8888:8888 -p 8787:8787 hamedalemo/vector-tutorial:1.0
+docker run -it -p 8888:8888 -p 8787:8787 hamedalemo/vector-tutorial:1.1
 ```
 
 
 - Copy the Jupyter Lab url and paste it in your browser. 
-- Open `vector_analysis.ipynb`, and follow the instructions. 
+- Open `vector_analysis.ipynb`, `dask_geopandas_intro.ipynb`, and `scalable_vector_analysis.ipynb` and follow the instructions. 
 
 
 Build the Docker image:
@@ -34,4 +34,4 @@ Run the container as following after switching to the repository's directory loc
 docker run -it -p 8888:8888 vector-tutorial
 ```
 - Copy the Jupyter Lab url and paste it in your browser. 
-- Open `vector_analysis.ipynb`, and follow the instructions. 
+- Open `vector_analysis.ipynb`, `dask_geopandas_intro.ipynb`, and `scalable_vector_analysis.ipynb` and follow the instructions. 

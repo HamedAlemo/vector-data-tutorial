@@ -15,6 +15,8 @@ USER gisuser
 # Set working directory, and copy the notebook
 WORKDIR /home/gisuser
 COPY --chown=gisuser vector_analysis.ipynb .
+COPY --chown=gisuser dask_geopandas_intro.ipynb .
+COPY --chown=gisuser scalable_vector_analysis.ipynb .
 
 # Expose the JupyterLab and Dask ports
 EXPOSE 8888
