@@ -12,11 +12,12 @@ ENV PATH="$PATH:/opt/conda/envs/vector_tutorial/bin"
 RUN useradd -m gisuser
 USER gisuser
 
-# Set working directory, and copy the notebook
+# Set working directory, and copy files
 WORKDIR /home/gisuser
 COPY --chown=gisuser vector_analysis.ipynb .
 COPY --chown=gisuser dask_geopandas_intro.ipynb .
 COPY --chown=gisuser scalable_vector_analysis.ipynb .
+COPY --chown=gisuser utils.py .
 
 # Expose the JupyterLab and Dask ports
 EXPOSE 8888

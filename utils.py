@@ -1,8 +1,9 @@
 import os
 import dask_geopandas as dg
 import geopandas as gpd
-import requests 
 import tqdm
+from botocore.exceptions import ClientError
+
 
 def get_s3_keys(bucket_name, prefix, client):
     """
@@ -36,7 +37,22 @@ def get_s3_keys(bucket_name, prefix, client):
     return keys  
 
 def get_gdam_json(country_code, admin_level):
+    """
+    This function download geographic administrative boundaries from the GDAM website. User needs to check the website to make sure the requested admin_level is available for download. 
 
+    
+    Inputs:
+    --------
+    country_code: string
+        Target country's name in ISO Alpha-3 format
+    adming_level: int
+        Administrative level for the target boundaries
+
+    Returns:
+    --------
+    boundaries: Geopandas GeoDataFrame
+        Geographic administrative boundaries of the country_code in Geopandas GeoDataFrame
+    """
 
     url = f"https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_{country_code}_{admin_level}.json.zip"
     boundaries = gpd.read_file(url)
@@ -44,15 +60,38 @@ def get_gdam_json(country_code, admin_level):
     
     return boundaries
                   
-def get_google_microsoft_bldgs(country_code, s3_client):
+def get_google_microsoft_bldgs(country_code, s3_client, local_path, blocksize="256M"):
+    """
+    This function download geoparquet files from the Google Microsoft Building Footprint - Combined by VIDA dataset hosted on Source Cooperative (https://source.coop/repositories/vida/google-microsoft-open-buildings/description). 
+    
+    Inputs:
+    --------
+    country_code: string
+        Target country's name in ISO Alpha-3 format
+    s3_client: boto3 resource client
+        A boto3 resource client configured with AWS credentials and the endpoint_url for Source Cooperative
+    local_path: string
+        Path to a local directory for downloading the geoparquet file(s)
+    blocksize: string
+        Blocksize used to load the geoparquet with Dask DataFrame. Default is 256M.
 
+    Returns:
+    --------
+    bldg_ddf: Dask-Geopandas GeoDataFrame
+        Buildings footprint dataset in a Dask-Geopandas GeoDataFrame with lazy loading. 
+        
+    """
+    
     bucket_name = 'vida'
     prefix = "google-microsoft-open-buildings/geoparquet/by_country/country_iso="
     country_prefix = f"{prefix}{country_code}"
     keys = get_s3_keys(bucket_name, country_prefix, s3_client)
 
     for key in keys:
-        local_fname = f"./data/{key.split("/")[-1]}"
+        local_fname = f"{local_path}/{key.split("/")[-1]}"
+        if not os.path.exists(local_path):
+            os.mkdir(local_path)
+            
         if not os.path.exists(local_fname):
             print(f"File not found locally. Downloading from s3...")
             
@@ -62,11 +101,16 @@ def get_google_microsoft_bldgs(country_code, s3_client):
                                         Filename = f"./data/{key.split("/")[-1]}"
                                        )
                 print("Download complete.")
-            except:
-                print("An error occurred. Download failed")
+            except ClientError as error:
+                if error.response["Error"]["Code"] == "404":
+                    print("The specified key does not exist in the bucket.")
+                else:
+                    print(f"An error occurred: {error}")
+            except Exception as error:
+                print(f"An unexpected error occurred: {error}")
         else:
             print("File already exists locally. No download needed.")
 
-    bldg_ddf = dg.read_parquet(f"./data/{country_code}*.parquet", gather_spatial_partitions=False)
+    bldg_ddf = dg.read_parquet(f"./data/{country_code}*.parquet", gather_spatial_partitions=False, blocksize = blocksize)
 
     return bldg_ddf
