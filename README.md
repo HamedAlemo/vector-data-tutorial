@@ -13,25 +13,25 @@ It's recommended to pull the Docker image from Dockerhub. Otherwise, if you pref
 ```
 docker pull hamedalemo/vector-tutorial:1.1
 ```
+You will download files from s3 bucket in this tutorial, so it is best to mount a local directory to your container to keep the data accessible outside the container and after you terminate it:
 
 ```
-docker run -it -p 8888:8888 -p 8787:8787 hamedalemo/vector-tutorial:1.1
+docker run -it -p 8888:8888 -p 8787:8787 -v $(pwd):/home/gisuser/data hamedalemo/vector-tutorial:1.1
 ```
-
-
 - Copy the Jupyter Lab url and paste it in your browser. 
 - Open `vector_analysis.ipynb`, `dask_geopandas_intro.ipynb`, and `scalable_vector_analysis.ipynb` and follow the instructions. 
 
 
-Build the Docker image:
+### Build Your Docker image:
 
 ```
 docker build -t vector-tutorial .
 ```
 
 Run the container as following after switching to the repository's directory locally:
+
 ```
-docker run -it -p 8888:8888 vector-tutorial
+docker run -it -p 8888:8888 -p 8787:8787 -v $(pwd):/home/gisuser/data vector-tutorial
 ```
 - Copy the Jupyter Lab url and paste it in your browser. 
 - Open `vector_analysis.ipynb`, `dask_geopandas_intro.ipynb`, and `scalable_vector_analysis.ipynb` and follow the instructions. 
