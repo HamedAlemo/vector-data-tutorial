@@ -4,6 +4,7 @@ import geopandas as gpd
 from botocore.exceptions import ClientError
 import boto3
 
+
 os.environ['PROJ_LIB'] = '/opt/conda/envs/vector_tutorial/share/proj'
 
 def get_gdam_json(country_code, admin_level):
@@ -53,15 +54,18 @@ def get_google_microsoft_bldgs(country_code, local_path, blocksize="256M"):
         Buildings footprint dataset in a Dask-Geopandas GeoDataFrame with lazy loading. 
         
     """
-    
+
+    from botocore import UNSIGNED
+    from botocore.client import Config  
 
     s3_client = boto3.client('s3',
-                            endpoint_url='https://data.source.coop'
+                            endpoint_url='https://data.source.coop',
+                            config=Config(signature_version=UNSIGNED)
                             )
 
     bucket_name = 'vida'
     prefix = f"google-microsoft-open-buildings/geoparquet/by_country/country_iso="
-    country_prefix = f"{prefix}{country_code}"
+    country_prefix = f"{prefix}{country_code}/{country_code}.parquet"
     file_name = f"{country_code}.parquet"
 
     if not os.path.exists(local_path):
