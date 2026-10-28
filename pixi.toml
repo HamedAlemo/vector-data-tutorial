@@ -27,3 +27,6 @@ dask-labextension = ">=7.0.0,<8"
 dask-geopandas = ">=0.5.0,<0.6"
 matplotlib = ">=3.11.2,<4"
 nbconvert = ">=7.17.2,<8"
+
+[activation.env]
+PYTHONPATH="${PIXI_PROJECT_ROOT}"
