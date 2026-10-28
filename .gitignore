@@ -9,3 +9,6 @@
 
 # data
 data/
+
+# misc
+__pycache__/

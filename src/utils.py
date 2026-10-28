@@ -5,8 +5,6 @@ from botocore.exceptions import ClientError
 import boto3
 
 
-os.environ['PROJ_LIB'] = '/opt/conda/envs/vector_tutorial/share/proj'
-
 def get_gdam_json(country_code, admin_level):
     """
     This function download geographic administrative boundaries from the GDAM website. User needs to check the website to make sure the requested admin_level is available for download. 
